@@ -1,9 +1,7 @@
-const { BlobServiceClient, StorageSharedKeyCredential }  = require('@azure/storage-blob')
 const { DefaultAzureCredential } = require('@azure/identity')
 const { BatchServiceClient, BatchSharedKeyCredentials } = require('@azure/batch')
 const { AzureCliCredentials, loginWithAppServiceMSI } = require("@azure/ms-rest-nodeauth")
 const dayjs = require('dayjs')
-
 const args = require('./args.cjs')
 
 const GLOBALS = {
@@ -18,27 +16,7 @@ const GLOBALS = {
     PORTS_RANGE: [8000,9000]
 }
 
-function getBlobServiceClient(opts) {
-    const endpoint = `https://${opts.storageAccount}.blob.core.windows.net`
-    if (opts.storageAccountKey) {
-        const sharedKeyCredential = new StorageSharedKeyCredential(opts.storageAccount, opts.storageAccountKey)
-        return new BlobServiceClient(endpoint, sharedKeyCredential);
-    } else if (opts.storageConnectionString) {
-        return new BlobServiceClient.fromConnectionString(opts.storageConnectionString)
-    } else if (opts.storageSasToken) {
-        return new BlobServiceClient(`${endpoint}${opts.storageSasToken}`)
-    } else {
-        // uses either MI or CLI credentials (NOTE:CLI credentials doesn't seem to work right now)
-        let opts = args.opts()
-        const credentials = new DefaultAzureCredential(opts.managedIdentityClientId ? {
-            managedIdentityClientId: opts.managedIdentityClientId
-        } : {})
-        return new BlobServiceClient(endpoint, credentials);
-    }
-}
-
 async function getBatchServiceClient(opts) {
-    opts = opts || args.opts()
     if (opts.batchAccountKey) {
         const batchAccountName = opts.batchEndpoint.split('.')[0].split('//')[1]
         const batchCredentials = new BatchSharedKeyCredentials(batchAccountName, opts.batchAccountKey)
@@ -52,22 +30,6 @@ async function getBatchServiceClient(opts) {
     }
 }
                 
-/// fetch datasets from blob storage
-async function getDatasets(opts) {
-    const blobServiceClient = getBlobServiceClient(opts)
-
-    console.log(`fetching datasets from ${opts.storageContainer}`)
-    let result = []
-    const containerClient = blobServiceClient.getContainerClient(opts.storageContainer)
-    for await (const blob of containerClient.listBlobsFlat()) {
-        result.push({
-            name: blob.name,
-            container: opts.storageContainer
-        })
-    }
-    return result
-}
-
 function getUniqueId() {
     let d = new Date();
     // batch job/task names can only have alphanumerics, -, and _. So we remove
@@ -93,7 +55,8 @@ function pickPort() {
     throw Error('failed to find free port!')
 }
 
-async function submitJob(datasets, options, opts) {
+async function submit(datasets, options, opts) {
+    opts = opts || args.opts()
     const batchServiceClient = await getBatchServiceClient(opts)
     let label = `vizer ${datasets[0].name},... (num_datasets=${datasets.length})`
     const jobConfig = {
@@ -153,7 +116,7 @@ async function submitJob(datasets, options, opts) {
     }
 }
 
-async function trameServerReady(batchServiceClient, jobId, taskId, timeout) {
+async function vizerReady(batchServiceClient, jobId, taskId, timeout) {
     const expiration = dayjs().add(timeout || 10, 'minute')
     while (dayjs() < expiration) {
         let files = await batchServiceClient.file.listFromTask(jobId, taskId, {
@@ -171,8 +134,8 @@ async function trameServerReady(batchServiceClient, jobId, taskId, timeout) {
     throw Error('trame server ready timedout')
 }
 
-async function getComputeNode(jobInfo, timeout) {
-    const batchServiceClient = await getBatchServiceClient()
+async function get(jobInfo, timeout, opts) {
+    const batchServiceClient = await getBatchServiceClient( opts || args.opts() )
 
     const expiration = dayjs().add(timeout || 5, 'minute')
     while (dayjs() < expiration) {
@@ -183,7 +146,7 @@ async function getComputeNode(jobInfo, timeout) {
             throw Error('task has completed!')
         } else {
             let nodeInfo = await batchServiceClient.computeNode.get(task.nodeInfo.poolId, task.nodeInfo.nodeId)
-            await trameServerReady(batchServiceClient, jobInfo.jobId, jobInfo.taskId)
+            await vizerReady(batchServiceClient, jobInfo.jobId, jobInfo.taskId)
             return {
                 host: nodeInfo.ipAddress,
                 port: jobInfo.port
@@ -193,8 +156,8 @@ async function getComputeNode(jobInfo, timeout) {
     throw Error('task start timed out!')
 }
 
-async function terminateJob(jobInfo, opts) {
-    const batchServiceClient = await getBatchServiceClient(opts)
+async function terminate(jobInfo, opts) {
+    const batchServiceClient = await getBatchServiceClient( opts || args.opts() )
     
     // explicitly terminate task to otherwise status doesn't change for active tasks
     // when job is terminated.
@@ -202,14 +165,13 @@ async function terminateJob(jobInfo, opts) {
     await batchServiceClient.job.terminate(jobInfo.jobId)
 }
 
-async function testBatch() {
-    const batchServiceClient = await getBatchServiceClient()
+async function test(opts) {
+    const batchServiceClient = await getBatchServiceClient( opts || args.opts() )
     let pools = await batchServiceClient.pool.list()
     return pools.length
 }
 
-module.exports.getDatasets = getDatasets
-module.exports.submitJob = submitJob
-module.exports.getComputeNode = getComputeNode
-module.exports.terminateJob = terminateJob
-module.exports.testBatch = testBatch
+module.exports.submit = submit
+module.exports.terminate = terminate
+module.exports.get = get
+module.exports.test = test

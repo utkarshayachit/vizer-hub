@@ -1,6 +1,7 @@
 const express = require('express')
 const args = require('./utils/args.cjs')
-const utils = require('./utils/utils.cjs')
+const scheduler = require('./utils/batch.cjs')
+const storage = require('./utils/storage.cjs')
 
 const { createProxyMiddleware } = require('http-proxy-middleware')
 
@@ -32,7 +33,7 @@ app.use('/proxy', createProxyMiddleware({
 /// returns a listing of the datasets
 app.get('/datasets', async (req, res, next) => {
     try {
-        let data = await utils.getDatasets(opts)
+        let data = await storage.list(opts)
         res.json({ success: true, data: data })
     } catch (error) {
         next(error)
@@ -42,7 +43,7 @@ app.get('/datasets', async (req, res, next) => {
 /// start a new job
 app.post('/job', async (req, res, next) => {
     try {
-        let job = await utils.submitJob(req.body.datasets, req.body.options, opts)
+        let job = await scheduler.submit(req.body.datasets, req.body.options, opts)
         res.json({ success: true, job: job })
     } catch (error) {
         next (error)
@@ -52,7 +53,7 @@ app.post('/job', async (req, res, next) => {
 /// get information about compute node for a job
 app.post('/compute_node', async (req, res, next) => {
     try {
-        let info = await utils.getComputeNode(req.body.job)
+        let info = await scheduler.get(req.body.job)
         res.json({success: true, path: `proxy/${info.host}:${info.port}/`})
     } catch (error) {
         next(error)
@@ -62,7 +63,7 @@ app.post('/compute_node', async (req, res, next) => {
 /// cancel job
 app.post('/terminate_job', async (req, res, next) => {
     try {
-        await utils.terminateJob(req.body.job, opts)
+        await scheduler.terminate(req.body.job, opts)
         res.json({})
     } catch (error) {
         next(error)
@@ -71,7 +72,7 @@ app.post('/terminate_job', async (req, res, next) => {
 
 app.get('/test', async (req, res, next) => {
     try {
-        await utils.testBatch(opts.batchEndpoint)
+        await scheduler.test(opts)
         res.json({success: true})
     } catch (error) {
         next(error)
