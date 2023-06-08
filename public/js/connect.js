@@ -1,9 +1,9 @@
 export default {
-    emits: [
-        'connect'
-    ],
+  emits: [
+    'connect'
+  ],
 
-    template: `
+  template: `
     <v-container fluid>
         <v-card elevation="2" class="mx-auto my-12" max-width="50%">
             <v-card-title>vizer-hub: Visualization using Azure Batch</v-card-title>

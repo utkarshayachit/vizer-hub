@@ -1,25 +1,25 @@
 export default {
-    props: {
-      text: String,
-      cancelable: Boolean,
-    },
+  props: {
+    text: String,
+    cancelable: Boolean
+  },
 
-    data: () => ({
-        show: true,
-    }),
+  data: () => ({
+    show: true
+  }),
 
-    emits: [
-      'cancel'
-    ],
+  emits: [
+    'cancel'
+  ],
 
-    methods: {
-      abort () {
-        console.log('abort')
-        this.$emit('cancel')
-      },
-    },
+  methods: {
+    abort () {
+      console.log('abort')
+      this.$emit('cancel')
+    }
+  },
 
-    template: `
+  template: `
     <v-container fluid class=fill-height>
     <v-dialog center hide-overlay persistent width="300" v-model='show'>
       <v-card light class="pt-2">

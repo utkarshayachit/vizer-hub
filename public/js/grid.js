@@ -3,15 +3,15 @@ export default {
   props: {
     data: Array,
     columns: Array,
-    loadingText: String,
+    loadingText: String
   },
 
   data: () => ({
-    selected: [],
+    selected: []
   }),
 
   methods: {
-    on_select() {
+    on_select () {
       this.$emit('selection_changed', this.selected)
     }
   },
