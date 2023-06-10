@@ -13,7 +13,7 @@ program
   .requiredOption('-s,--storage-account <name>', 'storage account name')
   .requiredOption('-c,--storage-container <name>', 'storage container name', 'datasets')
   .option('-k,--storage-account-key <key>', 'storage account key for Shared Key authentication')
-  .option('-c,--storage-connection-string <string>', 'storage account connection string')
+  .option('-x,--storage-connection-string <string>', 'storage account connection string')
   .option('-t,--storage-sas-token <token>', 'storage account SAS token ot use SAS authentication')
 
 // batch account specific options
