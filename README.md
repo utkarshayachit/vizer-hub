@@ -36,7 +36,7 @@ Options:
   -e,--batch-account-key <key>             batch account access key for Shared Key authentication
   -n,--batch-pool-id <id>                  batch account pool id (default: "linux")
   -r,--batch-mount-path <path>             batch account mount relative path, if not specified storage container name will be used
-  -a,--container-image <name>              container app image name (default: "docker.io/utkarshayachit/vizer:osmesa")
+  -a,--container-image <name>              container app image name (default: "docker.io/utkarshayachit/vizer:osmesa-main")
   -h, --help                               display help for command
 ```
 
@@ -73,7 +73,7 @@ options are specified for Batch and Storage.
 | `-n`, `--batch-pool-id` | [**default**: `linux`] Batch account pool id. <br/> This is the pool that will be used to run the vizer jobs on.|
 | `-r`, `--batch-mount-path` | Batch account mount relative path. <br/> This is the path relative to the pool's mount path where the storage container <br/> will be mounted. If not specified, the storage container name will be used. |
 | **vizer Container Details** | |
-| `-a`, `--container-image` | [**default**: `docker.io/utkarshayachit/vizer:osmesa`]<br/> Container app image name. This is the container image that will be used to run the vizer jobs. <br/> The image must be available in a container registry that the batch account can access. |
+| `-a`, `--container-image` | [**default**: `docker.io/utkarshayachit/vizer:osmesa-main`]<br/> Container app image name. This is the container image that will be used to run the vizer jobs. <br/> The image must be available in a container registry that the batch account can access. |
 
 ## Docker
 

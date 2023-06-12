@@ -23,7 +23,7 @@ program
   .option('-r,--batch-mount-path <path>', 'batch account mount relative path, if not specified storage container name will be used')
 
 // container app specific options
-  .requiredOption('-a,--container-image <name>', 'container app image name', 'docker.io/utkarshayachit/vizer:osmesa')
+  .requiredOption('-a,--container-image <name>', 'container app image name', 'docker.io/utkarshayachit/vizer:osmesa-main')
 
 // .requiredOption('-s,--blob-storage-endpoint <url>', 'blob storage account endpoint (required)')
 // .requiredOption('-c,--container-registry <url>', 'container registry login server (required)')
