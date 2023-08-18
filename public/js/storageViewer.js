@@ -22,6 +22,7 @@ export default {
     selected: [],
     actions_disabled: true,
     use_cropping: false,
+    use_segmentation: false,
     link_interactions: false
   }),
 
@@ -36,6 +37,7 @@ export default {
     on_visualize () {
       this.$emit('visualize', this.selected, {
         use_cropping: this.use_cropping,
+        use_segmentation: this.use_segmentation,
         link_interactions: this.link_interactions
       })
     },
@@ -74,6 +76,18 @@ export default {
         this.selected.push({ name: items[i].name, container: items[i].container })
       }
       this.actions_disabled = (this.selected.length === 0)
+    },
+
+    on_use_segmentation_changed (value) {
+      if (value) {
+        this.use_cropping = false
+      }
+    },
+
+    on_use_cropping_changed (value) {
+      if (value) {
+        this.use_segmentation = false
+      }
     }
   },
 
@@ -99,7 +113,17 @@ export default {
                     <v-tooltip left>
                         <template v-slot:activator="{ on }">
                             <span v-on="on">
-                                <v-checkbox v-model="use_cropping" :disabled="actions_disabled" on-icon="mdi-crop" off-icon="mdi-crop"></v-checkbox>
+                                <v-checkbox v-model="use_segmentation" :disabled="actions_disabled" on-icon="mdi-select-group" off-icon="mdi-select-group"
+                                  @change="on_use_segmentation_changed"></v-checkbox>
+                            </span>
+                        </template>
+                        <span>Use segmentation view (if possible)</span>
+                    </v-tooltip>
+                    <v-tooltip left>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on">
+                                <v-checkbox v-model="use_cropping" :disabled="actions_disabled" on-icon="mdi-crop" off-icon="mdi-crop"
+                                  @change="on_use_cropping_changed"></v-checkbox>
                             </span>
                         </template>
                         <span>Use cropping view (if possible)</span>

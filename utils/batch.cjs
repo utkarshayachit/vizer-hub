@@ -84,6 +84,9 @@ async function submit (datasets, options, opts) {
   if (options.use_cropping) {
     commandLine.push('--force-view')
     commandLine.push('crop')
+  } else if (options.use_segmentation) {
+    commandLine.push('--force-view')
+    commandLine.push('segmentation')
   }
 
   if (options.link_interactions) {
