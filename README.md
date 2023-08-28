@@ -60,20 +60,20 @@ options are specified for Batch and Storage.
 | Argument | Description |
 | -------- | ----------- |
 | `-p`, `--port` | [**default**: `8000`] Port number to use for the web server. |
-| `-i`, `--managed-identity-client-id` | User managed identity client id. When running on an Azure VM or App Service, <br/> you can use this argument to pass the Managed Identity Client ID to vizer-hub.<br/> The identity will then be used for signing into batch account or storage account <br/> if any of the other arguments to pass keys/tokens for these services are not provided.|
+| `-i`, `--managed-identity-client-id` | User managed identity client id. When running on an Azure VM or App Service, you can use this argument to pass the Managed Identity Client ID to vizer-hub. The identity will then be used for signing into batch account or storage account if any of the other arguments to pass keys/tokens for these services are not provided.|
 | **Storage Account Details** | |
 | `-s`, `--storage-account` | **[required]** Name of the storage account to use.|
 | `-c`, `--storage-container` | [**default**: `datasets`] Name of the storage container to use. vizer-hub will list the contents of this container. |
-| `-k`, `--storage-account-key` | Storage account key for Shared Key authentication. When specified this key <br/> will be used to authenticate with the storage account.|
-| `-x`, `--storage-connection-string` | Storage account connection string. When specified this connection string <br/> will be used to authenticate with the storage account.|
-| `-t`, `--storage-sas-token` | Storage account SAS token. When specified this SAS token <br/> will be used to authenticate with the storage account.|
+| `-k`, `--storage-account-key` | Storage account key for Shared Key authentication. When specified this key will be used to authenticate with the storage account.|
+| `-x`, `--storage-connection-string` | Storage account connection string. When specified this connection string will be used to authenticate with the storage account.|
+| `-t`, `--storage-sas-token` | Storage account SAS token. When specified this SAS token will be used to authenticate with the storage account.|
 | **Batch Account Details** | |
-| `-b`, `--batch-endpoint` | **[required]** Batch account endpoint. <br/> This must be in the form `https://<batch-account-name>.<region>.batch.azure.com`|
-| `-e`, `--batch-account-key` | Batch account key for Shared Key authentication. When specified this key <br/> will be used to authenticate with the batch account.|
-| `-n`, `--batch-pool-id` | [**default**: `linux`] Batch account pool id. <br/> This is the pool that will be used to run the vizer jobs on.|
-| `-r`, `--batch-mount-path` | Batch account mount relative path. <br/> This is the path relative to the pool's mount path where the storage container <br/> will be mounted. If not specified, the storage container name will be used. |
+| `-b`, `--batch-endpoint` | **[required]** Batch account endpoint. This must be in the form `https://<batch-account-name>.<region>.batch.azure.com`|
+| `-e`, `--batch-account-key` | Batch account key for Shared Key authentication. When specified this key will be used to authenticate with the batch account.|
+| `-n`, `--batch-pool-id` | [**default**: `linux`] Batch account pool id. This is the pool that will be used to run the vizer jobs on.|
+| `-r`, `--batch-mount-path` | Batch account mount relative path. This is the path relative to the pool's mount path where the storage container will be mounted. If not specified, the storage container name will be used. |
 | **vizer Container Details** | |
-| `-a`, `--container-image` | [**default**: `docker.io/utkarshayachit/vizer:osmesa-main`]<br/> Container app image name. This is the container image that will be used to run the vizer jobs. <br/> The image must be available in a container registry that the batch account can access. |
+| `-a`, `--container-image` | Container app image name. This is the container image that will be used to run the vizer jobs. The image must be available in a container registry that the batch account can access. (**default**: `docker.io/utkarshayachit/vizer:osmesa-main`)|
 
 ## Docker
 
