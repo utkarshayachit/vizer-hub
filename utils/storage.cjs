@@ -27,7 +27,7 @@ function getBlobServiceClient (opts) {
 }
 
 /// fetch datasets from storage account
-async function list (opts) {
+async function listBlob (opts) {
   opts = opts || args.opts()
   const blobServiceClient = getBlobServiceClient(opts)
   console.log(`fetching datasets from ${opts.storageContainer}`)
@@ -40,6 +40,35 @@ async function list (opts) {
     })
   }
   return result
+}
+
+async function listLocal (opts) {
+  opts = opts || args.opts()
+  const fs = require('fs')
+  const path = require('path')
+  const result = []
+  const files = fs.readdirSync(opts.storagePath)
+  for (let i = 0; i < files.length; i++) {
+    const f = files[i]
+    const p = path.join(opts.storagePath, f)
+    if (!fs.statSync(p).isDirectory()) {
+      result.push({
+        name: f,
+        container: opts.storagePath
+      })
+    }
+  }
+  return result
+}
+
+async function list (opts) {
+  opts = opts || args.opts()
+  if (opts.storagePath) {
+    return listLocal(opts)
+  }
+  else {
+    return listBlob(opts)
+  }
 }
 
 module.exports.list = list
