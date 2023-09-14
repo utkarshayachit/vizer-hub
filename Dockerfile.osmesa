@@ -1,0 +1,18 @@
+FROM utkarshayachit/vizer:osmesa-main
+
+# default port on which the proxy server runs
+EXPOSE 8000
+
+WORKDIR /opt/vizer-hub
+COPY public public
+COPY utils utils
+COPY app.cjs app.cjs
+COPY package.json package.json
+COPY LICENSE LICENSE
+COPY README.md README.md
+
+COPY docker /opt/scripts
+RUN /opt/scripts/install-node.sh
+
+RUN npm install .
+ENTRYPOINT ["/usr/bin/node", "app.cjs", "--launcher", "/opt/scripts/entrypoint.sh"]

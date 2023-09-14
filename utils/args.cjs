@@ -15,21 +15,22 @@ program
   .option('-k,--storage-account-key <key>', 'storage account key for Shared Key authentication')
   .option('-x,--storage-connection-string <string>', 'storage account connection string')
   .option('-t,--storage-sas-token <token>', 'storage account SAS token ot use SAS authentication')
-
+  
+// location storage options
   .option('-d,--storage-path <path>', 'local directory to use for browsing instead of storage account (env: VZ_STORAGE_PATH)',
     process.env.VZ_STORAGE_PATH)
 
 // batch account specific options
-  .option('-b,--batch-endpoint <url>', 'batch account endpoint (required)')
+  .option('-b,--batch-endpoint <url>', 'batch account endpoint')
   .option('-e,--batch-account-key <key>', 'batch account access key for Shared Key authentication')
   .option('-n,--batch-pool-id <id>', 'batch account pool id', 'linux')
   .option('-r,--batch-mount-path <path>', 'batch account mount relative path, if not specified storage container name will be used')
-
 // container app specific options
-  .requiredOption('-a,--container-image <name>', 'container app image name', 'docker.io/utkarshayachit/vizer:osmesa-main')
+  .option('-a,--container-image <name>', 'container app image name', 'docker.io/utkarshayachit/vizer:osmesa-main')
 
-// .requiredOption('-s,--blob-storage-endpoint <url>', 'blob storage account endpoint (required)')
-// .requiredOption('-c,--container-registry <url>', 'container registry login server (required)')
+
+// launcher (instead of batch account) specific options
+  .option('-l,--launcher <script>', 'launcher script to use instead of batch account')
 
 program.configureHelp({
   helpWidth: 80,
@@ -46,12 +47,23 @@ function parse () {
   const opts = program.opts()
   if (!opts.storageAccount && !opts.storagePath) {
     program.error('either storage account (-s, --storage-account) or storage path (-d, --storage-path) must be specified')
+  }
 
+  if (opts.storageAccount && opts.storagePath) {
+    program.error('only one of storage account (-s, --storage-account) or storage path (-d, --storage-path) can be specified')
   }
 
   if (opts.storageAccount &&
     (!opts.storageAccountKey && !opts.storageConnectionString && !opts.storageSasToken)) {
     program.error('storage account key (-k, --storage-account-key), connection string (-x, --storage-connection-string), or SAS token (-t, --storage-sas-token) must be specified')
+  }
+
+  if (!opts.batchEndpoint && !opts.launcher) {
+    program.error('either batch account endpoint (-b, --batch-endpoint) or launcher script (-l, --launcher) must be specified')
+  }
+
+  if (opts.batchEndpoint && opts.launcher) {
+    program.error('only one of batch account endpoint (-b, --batch-endpoint) or launcher script (-l, --launcher) can be specified')
   }
 
   return opts
