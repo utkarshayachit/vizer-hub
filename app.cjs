@@ -1,12 +1,13 @@
 const express = require('express')
 const args = require('./utils/args.cjs')
-const scheduler = require('./utils/batch.cjs')
-const storage = require('./utils/storage.cjs')
 
 const { createProxyMiddleware } = require('http-proxy-middleware')
 
 const opts = args.parse()
+const scheduler = opts.launcher ? require('./utils/launcher.cjs') : require('./utils/batch.cjs')
+const storage = opts.storagePath ? require('./utils/storage-local.cjs') : require('./utils/storage.cjs')
 
+// ----------------------------------------------------------------------------
 function router (req) {
   const components = req.url.split('/').filter(e => e)
   if (components.length >= 2) {

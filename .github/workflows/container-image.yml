@@ -9,6 +9,15 @@ on:
 
 jobs:
   docker-linux:
+    strategy:
+      matrix:
+        flavor: [ base, osmesa ]
+        include:
+          - flavor: base
+            dockerfile: ./Dockerfile
+          - flavor: osmesa
+            dockerfile: ./Dockerfile.osmesa
+            prefix: 'osmesa-'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -18,6 +27,8 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: ${{ secrets.DOCKERHUB_USERNAME }}/vizer-hub
+        flavor: |
+          prefix=${{ matrix.prefix }},onlatest=true
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
@@ -29,7 +40,7 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: .
-        file: ./Dockerfile
+        file: ${{ matrix.dockerfile }}
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}

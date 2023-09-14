@@ -173,6 +173,9 @@ async function test (opts) {
   return pools.length
 }
 
+module.exports.getUniqueId = getUniqueId
+module.exports.pickPort = pickPort
+
 module.exports.submit = submit
 module.exports.terminate = terminate
 module.exports.get = get
