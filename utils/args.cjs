@@ -53,11 +53,6 @@ function parse () {
     program.error('only one of storage account (-s, --storage-account) or storage path (-d, --storage-path) can be specified')
   }
 
-  if (opts.storageAccount &&
-    (!opts.storageAccountKey && !opts.storageConnectionString && !opts.storageSasToken)) {
-    program.error('storage account key (-k, --storage-account-key), connection string (-x, --storage-connection-string), or SAS token (-t, --storage-sas-token) must be specified')
-  }
-
   if (!opts.batchEndpoint && !opts.launcher) {
     program.error('either batch account endpoint (-b, --batch-endpoint) or launcher script (-l, --launcher) must be specified')
   }
